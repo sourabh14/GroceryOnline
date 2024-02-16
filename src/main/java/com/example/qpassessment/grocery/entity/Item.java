@@ -1,12 +1,17 @@
-package com.example.qpassessment.security.entity;
+package com.example.qpassessment.grocery.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
+import com.example.qpassessment.grocery.dto.ItemDto;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -18,22 +23,26 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "user")
+@Table(name = "item")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class Item {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username;
+    private String code;
 
-    private String password;
+    private String name;
 
-    private String roles;   // Comma separated list of roles
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Inventory inventory;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
@@ -42,4 +51,11 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     private Date updatedAt;
+
+    public Item(ItemDto itemDto) {
+        this.code = itemDto.getCode();
+        this.name = itemDto.getName();
+        this.price = itemDto.getPrice();
+        this.inventory = new Inventory();
+    }
 }

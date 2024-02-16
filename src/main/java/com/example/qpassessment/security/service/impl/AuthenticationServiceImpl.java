@@ -1,14 +1,14 @@
 package com.example.qpassessment.security.service.impl;
 
+import com.example.qpassessment.grocery.exception.ApplicationException;
 import com.example.qpassessment.security.dao.request.SignInRequest;
 import com.example.qpassessment.security.dao.request.SignUpRequest;
 import com.example.qpassessment.security.dao.response.JwtAuthenticationResponse;
 import com.example.qpassessment.security.entity.Role;
 import com.example.qpassessment.security.entity.User;
-import com.example.qpassessment.security.exception.UserAlreadyExistsAuthenticationException;
 import com.example.qpassessment.security.repository.UserRepository;
-import com.example.qpassessment.security.util.JwtTokenUtil;
 import com.example.qpassessment.security.service.AuthenticationService;
+import com.example.qpassessment.security.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,9 +29,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
 
     @Override
-    public JwtAuthenticationResponse signup(SignUpRequest request) throws UserAlreadyExistsAuthenticationException {
+    public JwtAuthenticationResponse signup(SignUpRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new UserAlreadyExistsAuthenticationException("User " + request.getUsername() + " already exists");
+            throw new ApplicationException("User " + request.getUsername() + " already exists");
         }
 
         User user = User.builder()
@@ -50,6 +50,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtAuthenticationResponse signin(SignInRequest request) {
         authenticate(request.getUsername(), request.getPassword());
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        final String token = jwtTokenUtil.generateToken(userDetails);
+        return new JwtAuthenticationResponse(token);
+    }
+
+    @Override
+    public JwtAuthenticationResponse signupAdmin(SignUpRequest request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new ApplicationException("User " + request.getUsername() + " already exists");
+        }
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .roles(Role.ROLE_ADMIN.name())
+                .build();
+        userRepository.save(user);
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
         return new JwtAuthenticationResponse(token);
     }

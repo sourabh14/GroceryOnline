@@ -1,12 +1,18 @@
-package com.example.qpassessment.security.entity;
+package com.example.qpassessment.grocery.entity;
 
 import java.util.Date;
+import java.util.List;
 
+import com.example.qpassessment.security.entity.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -18,22 +24,26 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "user")
+@Table(name = "sale_order")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class SaleOrder {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username;
+    private String code;
 
-    private String password;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    private String roles;   // Comma separated list of roles
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="sale_order_id")
+    private List<SaleOrderItem> orderItems;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
