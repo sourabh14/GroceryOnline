@@ -42,6 +42,22 @@ cd qp-assessment
 ./mvnw spring-boot:run
 ```
 
+### Installation through Docker
+```shell
+docker network create qp-network
+docker pull mysql
+docker run --name mysql-container --network qp-network -p 3306:3306 -e MYSQL_ROOT_PASSWORD=uniware -d mysql
+mysql -h localhost -P 3306 --protocol=tcp -u root -p
+create database qpassessment;
+```
+
+```shell
+export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+mvn clean package -Dmaven.test.skip
+docker build -t qp-assessment:0.0.1 .
+docker run --name app-container --network qp-network -p 8081:8081 qp-assessment:0.0.1
+```
+
 ## Usage
 
 #### Sign-up for admin user
@@ -67,3 +83,4 @@ Api docs generated via swagger are available at:
 [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)
 
 ![](src/main/resources/images/ApiDocs.png)
+
