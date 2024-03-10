@@ -1,5 +1,5 @@
-# Grocery Booking Application
-The application enables users to create and manage grocery items while also facilitating the creation of sale orders.
+# GroceryOnline
+The application enables users and admins to create and manage grocery items while also facilitating the creation of sale orders.
 
 ## Feature Overview
 The app supports two roles: ADMIN and USER
@@ -15,17 +15,18 @@ User Responsibilities:
 - View the list of available grocery items 
 - Ability to book multiple grocery items in a single order
 
-## Tech Stack
+## Tools and Tech Stack
 - Java: JDK 17
-- Framework: Spring Boot 3.2
+- Framework: Spring Boot 3.2, Spring Web, Spring Security
 - ORM: Hibernate
 - Database: MySQL 8
-- Build tool: Maven 3.6
+- Build tool: Maven 3.6, Docker
+- API docs: Swagger
 
 ## Installation
 Clone git repo
 ```shell
-git clone git@github.com:sourabh14/qp-assessment.git
+git clone git@github.com:sourabh14/GroceryOnline.git
 ```
 
 Update spring datasource username and password in src/main/resources/application.properties
@@ -33,29 +34,29 @@ The default datasource url is set to localhost:3306
 
 Mysql:
 ```mysql
-create database qpassessment;
+create database groceryonline;
 ```
 
 Start the application:
 ```shell
-cd qp-assessment
+cd GroceryOnline
 ./mvnw spring-boot:run
 ```
 
 ### Installation through Docker
 ```shell
-docker network create qp-network
+docker network create groceryonline-network
 docker pull mysql
-docker run --name mysql-container --network qp-network -p 3306:3306 -e MYSQL_ROOT_PASSWORD=uniware -d mysql
+docker run --name mysql-container --network groceryonline-network -p 3306:3306 -e MYSQL_ROOT_PASSWORD=uniware -d mysql
 mysql -h localhost -P 3306 --protocol=tcp -u root -p
-create database qpassessment;
+create database groceryonline;
 ```
 
 ```shell
 export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
 mvn clean package -Dmaven.test.skip
-docker build -t qp-assessment:0.0.1 .
-docker run --name app-container --network qp-network -p 8081:8081 qp-assessment:0.0.1
+docker build -t grocery-online:0.0.1 .
+docker run --name app-container --network groceryonline-network -p 8081:8081 grocery-online:0.0.1
 ```
 
 ## Usage
